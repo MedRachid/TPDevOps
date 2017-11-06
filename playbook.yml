@@ -1,0 +1,61 @@
+---
+
+- hosts: docker-group
+
+  remote_user: root
+
+  tasks:
+  - name: installer nginx
+    apt:    
+      name: nginx
+      state: latest
+
+  - name: installer git
+    apt:
+      name: git
+      state: latest
+
+  - name: installer curl
+    apt:
+      name: curl
+      state: latest
+
+  - name: installer node
+    shell: curl -sL https://deb.nodesource.com/setup_8.x | sh
+  
+  - name: installer nodev2
+    apt:
+      name: nodejs
+      state: latest
+
+  - name: installer les pacquets optionels nodejs
+    apt: 
+      name: build-essential
+      state: latest
+
+  - name: cloner le projet nodejs
+    git:
+      repo: https://git.mrzee.fr/student/my-node-project.git
+      dest: /var/www/my-node-project
+
+  - name: Install packages global
+    npm:
+      name: pm2
+      global: yes
+  
+  - name: Installer packages npm
+    npm:
+      path: /var/www/my-node-project/myapp/
+ 
+  - name: Start pm2
+    shell: pm2 start /var/www/my-node-project/myapp/bin/www
+
+  - name: Copier fichier vhost vers nginx default
+    shell: cp /var/www/my-node-project/vhost /etc/nginx/sites-enabled/default
+
+  - name: restart nginx
+    shell: service nginx restart
+
+
+
+
